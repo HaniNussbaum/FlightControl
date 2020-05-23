@@ -6,11 +6,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+
 namespace FlightControlWeb.Models
 {
     public class Server { 
-        public int ServerId { get; }
-        public string ServerURL { get; }
+        public int ServerId { get; set; }
+        public string ServerURL { get; set; }
 
     }
 

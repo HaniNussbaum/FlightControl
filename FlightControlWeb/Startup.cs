@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+
 namespace FlightControlWeb
 {
     public class Startup
@@ -25,7 +26,7 @@ namespace FlightControlWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddMemoryCache();
         }
 

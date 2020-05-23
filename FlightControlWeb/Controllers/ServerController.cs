@@ -9,7 +9,7 @@ using FlightControlWeb.Models;
 
 namespace FlightControlWeb.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/servers")]
     [ApiController]
     public class ServerController : ControllerBase
     {
@@ -19,16 +19,19 @@ namespace FlightControlWeb.Controllers
             _cache = cache;
         }
         [HttpGet]
-        public ActionResult <List<Server>> GetServers()
+        public List<Server> GetServers()
         {
             var serversList = new List<Server>();
             if (!_cache.TryGetValue("ServerList", out serversList))
             {
                 if (serversList == null)
                 {
-                    return NotFound();
+                    return null;
                 }
-       
+            }
+            foreach(Server server in serversList)
+            {
+                System.Diagnostics.Debug.WriteLine(server.ServerURL);
             }
             return serversList;
         }
@@ -41,6 +44,7 @@ namespace FlightControlWeb.Controllers
             {
                 if (serversDictionary == null)
                 {
+                    Console.WriteLine("dictionarynull");
                     serversDictionary = new Dictionary<int, Server>();
                 }
                 _cache.Set("ServerList", serversDictionary);
@@ -50,12 +54,16 @@ namespace FlightControlWeb.Controllers
                 if (serversList == null)
                 {
                     serversList = new List<Server>();
+                    System.Diagnostics.Debug.WriteLine("serversnull");
                 }
                 _cache.Set("ServerList", serversList);
             }
             int currServerId = currServer.ServerId;
+            System.Diagnostics.Debug.WriteLine(currServerId);
             serversDictionary.Add(currServerId, currServer);
-            return CreatedAtAction(actionName: "GetServer", new { id = currServer.ServerId }, currServer);
+            serversList.Add(currServer);
+            // return CreatedAtAction(actionName: "GetServer", new { id = currServer.ServerId }, currServer);
+            return Ok(currServerId);
         }
 
         //return list of servers in json format

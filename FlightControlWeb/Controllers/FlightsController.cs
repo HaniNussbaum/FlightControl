@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace FlightControlWeb.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("FlightControlWeb/api/[controller]")]
     [ApiController]
 
     public class FlightsController : ControllerBase
@@ -21,13 +21,19 @@ namespace FlightControlWeb.Controllers
         }
 
         // GET: /api/Flights?relative_to=<DATE_TIME>
-        [HttpGet, Route("Flights?relative_to={time}")]
+        [HttpGet, Route("/api/Flights/{relative_to=time}")]
+        public ActionResult<string> GetInnerFlights(string time){ 
+            /**
         public IEnumerable<dynamic> GetInnerFlights(string time){
+            */
+            return Ok(time);
+            /**
             return _model.GetInnerFlightsByTime(time);
+    */
         }
 
         // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all
-        [HttpGet, Route("Flights?relative_to={time}&sync_all")]
+        [HttpGet, Route("Flights/{relative_to=time}/sync_all")]
         public IEnumerable<dynamic> GetAllFlights(string time)
         {
             return _model.GetAllFlightsByTime(time);

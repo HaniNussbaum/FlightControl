@@ -22,6 +22,7 @@ namespace FlightControlWeb.Models
 
 		public List<dynamic> GetInnerFlightsByTime(string time)
         {
+	
 			List<dynamic> currFlights = new List<dynamic>();
 			try
 			{
@@ -34,6 +35,8 @@ namespace FlightControlWeb.Models
 				//time in wrong format
 				return null;
 			}
+
+
         }
 
 		public List<dynamic> GetAllFlightsByTime(string time)
