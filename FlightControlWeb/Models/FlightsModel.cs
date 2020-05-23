@@ -20,7 +20,7 @@ namespace FlightControlWeb.Models
 			_cache = cache;
 		}
 
-		public IEnumerable<dynamic> GetInnerFlightsByTime(string time)
+		public List<dynamic> GetInnerFlightsByTime(string time)
         {
 			List<dynamic> currFlights = new List<dynamic>();
 			try
@@ -36,9 +36,9 @@ namespace FlightControlWeb.Models
 			}
         }
 
-		public IEnumerable<dynamic> GetAllFlightsByTime(string time)
+		public List<dynamic> GetAllFlightsByTime(string time)
 		{
-			IEnumerable<dynamic> currFlights = GetInnerFlightsByTime(time);
+			List<dynamic> currFlights = GetInnerFlightsByTime(time);
 			HttpClient client = new HttpClient();
 			var servers = new List<Server>();
 			if (_cache.TryGetValue("ServerList", out servers))
@@ -57,7 +57,7 @@ namespace FlightControlWeb.Models
 			DateTime now = DateTime.UtcNow;
 			string timeStr = now.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo) + "T"
 				+ now.ToString("HH:mm:ss", DateTimeFormatInfo.InvariantInfo) + "Z";
-			var response = await client.GetStringAsync(server.url + "/api/Flights?relative_to=" + timeStr);
+			var response = await client.GetStringAsync(server.ServerURL + "/api/Flights?relative_to=" + timeStr);
 			dynamic json = JsonConvert.DeserializeObject(response);
 			foreach (var item in json)
 			{
