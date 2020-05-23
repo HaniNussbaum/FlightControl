@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace FlightControlWeb.Models
 {
 
-	public class FlightsModel
+	public class FlightsModel : IFlightsModel
 	{
 		private IMemoryCache _cache;
 
