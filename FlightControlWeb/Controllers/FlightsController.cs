@@ -23,17 +23,26 @@ namespace FlightControlWeb.Controllers
         // GET: /api/Flights?relative_to=<DATE_TIME>
         // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all
         [HttpGet]
-        public List<dynamic> GetInnerFlights()
+        public ActionResult<List<dynamic>> GetInnerFlights()
         {
             string time = Request.Query["relative_to"];
+            List<FlightWrapper> flights;
             if (Request.Query.ContainsKey("sync_all"))
             {
-                return _model.GetAllFlightsByTime(time);
+                flights = _model.GetAllFlightsByTime(time);
             }
             else
             {
-                return _model.GetInnerFlightsByTime(time);
+                System.Diagnostics.Debug.WriteLine("in get inner flights");
+                flights = _model.GetInnerFlightsByTime(time);
             }
+            List<Flight> flightsJsons = new List<Flight>();
+            foreach (FlightWrapper flight in flights)
+            {
+                flightsJsons.Add(flight.getFlight());
+                System.Diagnostics.Debug.WriteLine(flight.Id);
+            }
+            return Ok(flightsJsons);
         }
 
         ///DELETE: api/Flights/{id}

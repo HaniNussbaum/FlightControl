@@ -6,15 +6,27 @@ namespace FlightControlWeb.Models
 {
     public class FlightWrapper
     {
+        [JsonIgnore]
         private Flight flight;
+        [JsonIgnore]
         public string Id { get { return flight.Id; } }
+        [JsonIgnore]
         public double Longitude { get { return flight.Longitude; } }
+        [JsonIgnore]
         public double Latitude { get { return flight.Latitude; } }
+        [JsonProperty("passengers")]
         public int Passengers { get { return flight.Passengers; } }
+        [JsonProperty("company_name")]
         public string Company { get { return flight.Company; } }
+        [JsonIgnore]
         public DateTime DateTime { get { return flight.DateTime; } }
+        [JsonIgnore]
         public bool Is_external { get { return flight.Is_external; } }
-        public List<Dictionary<string, double>> Segments { get { return flight.Segments; } }
+        [JsonProperty("initial_location")]
+        public Dictionary<string, dynamic> InitialLocation { get; set; }
+        [JsonProperty("segments")]
+        public List<Dictionary<string, dynamic>> Segments { get; set; }
+        [JsonIgnore]
         public DateTime EndTime { get; private set; }
 
         public FlightWrapper(Flight flight)
@@ -23,11 +35,27 @@ namespace FlightControlWeb.Models
             SetEndTime();
         }
 
+        public FlightWrapper(FlightPlan plan)
+        {
+            this.flight = new Flight();
+            this.flight.Passengers = plan.Passengers;
+            this.flight.Company = plan.Company;
+            this.flight.Longitude = plan.InitialLocation["longitude"];
+            this.flight.Latitude = plan.InitialLocation["latitude"];
+            this.flight.DateTime = plan.InitialLocation["date_time"];
+            this.InitialLocation = plan.InitialLocation;
+            this.flight.Is_external = false;
+            //hash id
+            this.Segments = plan.Segments;
+            this.setFlightId();
+            SetEndTime();
+        }
+
         public void UpdateLocation(DateTime time)
         {
             int i = 0;
             DateTime tempTime = DateTime.AddSeconds(Segments[0]["timespan_seconds"]);
-            foreach (Dictionary<string, double> segment in Segments)
+            foreach (Dictionary<string, dynamic> segment in Segments)
             {
                 if (DateTime.Compare(time, tempTime) > 0)
                 {
@@ -48,16 +76,36 @@ namespace FlightControlWeb.Models
         private void SetEndTime()
         {
             DateTime tempTime = DateTime;
-            foreach (Dictionary<string, double> segment in Segments)
+            foreach (Dictionary<string, dynamic> segment in Segments)
             {
                 tempTime = tempTime.AddSeconds(segment["timespan_seconds"]);
             }
             EndTime = tempTime;
         }
 
-        public dynamic getJson()
+        public Flight getFlight()
         {
-            return JsonConvert.SerializeObject(this.flight);
+            return this.flight;
+        }
+        
+        public dynamic getFlightPlanJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+    
+        private void setFlightId()
+        {
+            string toHash = this.Company + this.DateTime.ToString() + this.Longitude.ToString();
+            int code = toHash.GetHashCode();
+            this.flight.Id = code.ToString("X8");
+        }
+
+        private DateTime parseDateTime(string time)
+        {
+            char[] delimeters = { ':', 'T', 'Z', '-' };
+            string[] words = time.Split(delimeters);
+            return new DateTime(Int32.Parse(words[0]), Int32.Parse(words[1]), Int32.Parse(words[2]),
+                Int32.Parse(words[3]), Int32.Parse(words[4]), Int32.Parse(words[5]));
         }
     }
 }
