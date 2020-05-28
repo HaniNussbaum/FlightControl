@@ -29,12 +29,6 @@ namespace FlightControlWeb.Models
         [JsonIgnore]
         public DateTime EndTime { get; private set; }
 
-        public FlightWrapper(Flight flight)
-        {
-            this.flight = flight;
-            SetEndTime();
-        }
-
         public FlightWrapper(FlightPlan plan)
         {
             this.flight = new Flight();

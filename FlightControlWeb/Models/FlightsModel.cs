@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
@@ -20,10 +21,10 @@ namespace FlightControlWeb.Models
 			_cache = cache;
 		}
 
-		public List<FlightWrapper> GetInnerFlightsByTime(string time)
+		public List<Flight> GetInnerFlightsByTime(string time)
         {
 	
-			List<FlightWrapper> currFlights = new List<FlightWrapper>();
+			List<Flight> currFlights = new List<Flight>();
 			try
 			{
 				DateTime relativeTime = parseDateTime(time);
@@ -39,31 +40,31 @@ namespace FlightControlWeb.Models
 
         }
 
-		public List<FlightWrapper> GetAllFlightsByTime(string time)
+		public async Task<List<Flight>> GetAllFlightsByTimeAsync(string time)
 		{
-			List<FlightWrapper> currFlights = GetInnerFlightsByTime(time);
+			List<Flight> currFlights = GetInnerFlightsByTime(time);
+			if (currFlights == null)
+			{
+				currFlights = new List<Flight>();
+			}
 			HttpClient client = new HttpClient();
 			var servers = new List<Server>();
 			if (_cache.TryGetValue("ServerList", out servers))
 			{
 				foreach (Server server in servers)
 				{
-					GetCurrentFromServer(server, currFlights, time);
+					List<Flight> list = await GetCurrentFromServer(server, time, currFlights);
+					currFlights.AddRange(list);
 				}
 			}
 			return currFlights;
 		}
 
-		public async void GetCurrentFromServer(Server server, List<FlightWrapper> currFlights, string time)
+		public async Task<List<Flight>> GetCurrentFromServer(Server server, string time, List<Flight> currFlights)
 		{
 			HttpClient client = new HttpClient();
 			var response = await client.GetStringAsync(server.ServerURL + "/api/Flights?relative_to=" + time);
-			List<Flight> flights = JsonConvert.DeserializeObject<List<Flight>>(response);
-			foreach (Flight flight in flights)
-			{
-				FlightWrapper temp = new FlightWrapper(flight);
-				currFlights.Add(temp);
-			}
+			return JsonConvert.DeserializeObject<List<Flight>>(response);
 		}
 		public bool DeleteFlight(string id)
 		{
@@ -79,7 +80,7 @@ namespace FlightControlWeb.Models
 				Int32.Parse(words[3]), Int32.Parse(words[4]), Int32.Parse(words[5]));
 		}
 
-		private void IterateFlights(List<FlightWrapper> currFlights, DateTime time)
+		private void IterateFlights(List<Flight> currFlights, DateTime time)
 		{
 			Dictionary<string, FlightWrapper> allFlights = _cache.Get<Dictionary<string, FlightWrapper>>("flights");
 			if (allFlights == null)
@@ -94,7 +95,7 @@ namespace FlightControlWeb.Models
 				{
 					System.Diagnostics.Debug.WriteLine(flight.Value.Id);
 					flight.Value.UpdateLocation(time);
-					currFlights.Add(flight.Value);
+					currFlights.Add(flight.Value.getFlight());
 				}
 			}
 		}
