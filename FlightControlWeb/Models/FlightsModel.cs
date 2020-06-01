@@ -66,6 +66,7 @@ namespace FlightControlWeb.Models
 			var response = await client.GetStringAsync(server.ServerURL + "/api/Flights?relative_to=" + time);
 			return JsonConvert.DeserializeObject<List<Flight>>(response);
 		}
+
 		public bool DeleteFlight(string id)
 		{
 			Dictionary<string, FlightWrapper> allFlights = _cache.Get<Dictionary<string, FlightWrapper>>("flights");
