@@ -48,6 +48,15 @@ namespace FlightControlWeb.Models
                 throw new Exception("latitude range is -90 - +90");
             }
             this.flight.Latitude = plan.InitialLocation["latitude"];
+            try
+            {
+                DateTime dt = DateTime.ParseExact(plan.InitialLocation["date_time"], "yyyy-MM-ddTHH:mm:ssZ",
+                    System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("date_time format is incorrect");
+            }
             this.flight.DateTime = plan.InitialLocation["date_time"];
             this.InitialLocation = plan.InitialLocation;
             this.flight.Is_external = false;
