@@ -8,6 +8,8 @@ using Microsoft.Extensions.Caching.Memory;
 using FlightControlWeb.Models;
 using Newtonsoft.Json;
 using System.Net;
+using System.IO;
+using System.Text;
 
 namespace FlightControlWeb.Controllers
 {

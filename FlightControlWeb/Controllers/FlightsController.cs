@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using FlightControlWeb.Models;
 using Microsoft.Extensions.Caching.Memory;
+using System.Threading.Tasks;
+using System;
 
 namespace FlightControlWeb.Controllers
 {
@@ -14,10 +12,17 @@ namespace FlightControlWeb.Controllers
 
     public class FlightsController : ControllerBase
     {
-        private readonly FlightsModel _model;
+        private FlightsModel _model;
+        private IMemoryCache _cache;
 
         public FlightsController(IMemoryCache cache) {
-            _model = new FlightsModel(cache);
+            _model = new FlightsModel();
+            _cache = cache;
+        }
+
+        public void SetModel(FlightsModel model)
+        {
+            _model = model;
         }
 
         // GET: /api/Flights?relative_to=<DATE_TIME>
@@ -29,12 +34,11 @@ namespace FlightControlWeb.Controllers
             List<Flight> flights;
             if (Request.Query.ContainsKey("sync_all"))
             {
-                flights = _model.GetAllFlightsByTimeAsync(time).Result;
+                flights = GetAllFlightsByTimeAsync(time).Result;
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("in get inner flights");
-                flights = _model.GetInnerFlightsByTime(time);
+                flights = GetInnerFlightsByTime(time);
             }
             return Ok(flights);
         }
@@ -43,11 +47,75 @@ namespace FlightControlWeb.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteFlight(string id)
         {
-            if (_model.DeleteFlight(id))
+            Dictionary<string, FlightWrapper> allFlights = _cache.Get<Dictionary<string, FlightWrapper>>("flights");
+            if (allFlights.Remove(id))
             {
                 return Ok(id);
             }
             return NotFound(id);
+        }
+
+        private List<Flight> GetInnerFlightsByTime(string time)
+        {
+
+            List<Flight> currFlights = new List<Flight>();
+            try
+            {
+                DateTime relativeTime = parseDateTime(time);
+                IterateFlights(currFlights, relativeTime);
+                return currFlights;
+            }
+            catch (Exception e)
+            {
+                e.ToString();
+                //time in wrong format
+                return currFlights;
+            }
+        }
+
+        public async Task<List<Flight>> GetAllFlightsByTimeAsync(string time)
+        {
+            List<Flight> currFlights = GetInnerFlightsByTime(time);
+            if (currFlights == null)
+            {
+                currFlights = new List<Flight>();
+            }
+            //HttpClient client = new HttpClient();
+            var servers = new List<Server>();
+            if (_cache.TryGetValue("ServerList", out servers))
+            {
+                foreach (Server server in servers)
+                {
+                    List<Flight> list = await _model.GetCurrentFromServer(server, time, currFlights);
+                    currFlights.AddRange(list);
+                }
+            }
+            return currFlights;
+        }
+
+        private DateTime parseDateTime(string time)
+        {
+            char[] delimeters = { ':', 'T', 'Z', '-' };
+            string[] words = time.Split(delimeters);
+            return new DateTime(Int32.Parse(words[0]), Int32.Parse(words[1]), Int32.Parse(words[2]),
+                Int32.Parse(words[3]), Int32.Parse(words[4]), Int32.Parse(words[5]));
+        }
+
+        private void IterateFlights(List<Flight> currFlights, DateTime time)
+        {
+            Dictionary<string, FlightWrapper> allFlights = _cache.Get<Dictionary<string, FlightWrapper>>("flights");
+            if (allFlights == null)
+            {
+                return;
+            }
+            foreach (var flight in allFlights)
+            {
+                if (DateTime.Compare(time, flight.Value.EndTime) <= 0 && DateTime.Compare(time, flight.Value.DateTime) > 0)
+                {
+                    flight.Value.UpdateLocation(time);
+                    currFlights.Add(flight.Value.getFlight());
+                }
+            }
         }
     }
 }
