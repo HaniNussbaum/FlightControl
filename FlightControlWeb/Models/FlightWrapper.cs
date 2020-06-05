@@ -37,6 +37,10 @@ namespace FlightControlWeb.Models
                 throw new Exception("number of passengers can not be negative");
             }
             this.flight.Passengers = plan.Passengers;
+            if (plan.Company == "" || plan.Company == null)
+            {
+                throw new Exception("company name missing");
+            }
             this.flight.Company = plan.Company;
             if (plan.InitialLocation["longitude"] < -180 || plan.InitialLocation["longitude"] > 180)
             {
@@ -48,15 +52,6 @@ namespace FlightControlWeb.Models
                 throw new Exception("latitude range is -90 - +90");
             }
             this.flight.Latitude = plan.InitialLocation["latitude"];
-            try
-            {
-                DateTime dt = DateTime.ParseExact(plan.InitialLocation["date_time"], "yyyy-MM-ddTHH:mm:ssZ",
-                    System.Globalization.CultureInfo.InvariantCulture);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("date_time format is incorrect");
-            }
             this.flight.DateTime = plan.InitialLocation["date_time"];
             this.InitialLocation = plan.InitialLocation;
             this.flight.Is_external = false;
@@ -84,12 +79,12 @@ namespace FlightControlWeb.Models
         public void UpdateLocation(DateTime time)
         {
             int i = 0;
-            DateTime tempTime = DateTime.AddSeconds(Segments[0]["timespan_seconds"]);
+            DateTime tempTime = this.InitialLocation["date_time"];
             foreach (Dictionary<string, dynamic> segment in Segments)
             {
                 if (DateTime.Compare(time, tempTime) > 0)
                 {
-                    tempTime = DateTime.AddSeconds(segment["timespan_seconds"]);
+                    tempTime = tempTime.AddSeconds(segment["timespan_seconds"]);
                     i++;
                 }
                 else
@@ -98,9 +93,18 @@ namespace FlightControlWeb.Models
                 }
             }
             //calculate how much progress the plane has made in it's current segment:
-            double relativeProgress = 1 - ((tempTime - time).TotalSeconds / Segments[i]["timespan_seconds"]);
-            flight.Latitude = (1 - relativeProgress) * Segments[i]["latitude"] + relativeProgress * Segments[i + 1]["latitude"];
-            flight.Longitude = (1 - relativeProgress) * Segments[i]["longitude"] + relativeProgress * Segments[i + 1]["longitude"];
+            double relativeProgress = 1 - ((tempTime - time).TotalSeconds / Segments[i - 1]["timespan_seconds"]);
+            // first route segment
+            if (i == 1)
+            {
+                flight.Latitude = (1 - relativeProgress) * this.InitialLocation["latitude"] + relativeProgress * Segments[i - 1]["latitude"];
+                flight.Longitude = (1 - relativeProgress) * this.InitialLocation["longitude"] + relativeProgress * Segments[i - 1]["longitude"];
+            }
+            else // not first route segments
+            {
+                flight.Latitude = (1 - relativeProgress) * Segments[i - 2]["latitude"] + relativeProgress * Segments[i - 1]["latitude"];
+                flight.Longitude = (1 - relativeProgress) * Segments[i - 2]["longitude"] + relativeProgress * Segments[i - 1]["longitude"];
+            }
         }
 
         private void SetEndTime()
@@ -117,12 +121,12 @@ namespace FlightControlWeb.Models
         {
             return this.flight;
         }
-        
+
         public dynamic getFlightPlanJson()
         {
             return JsonConvert.SerializeObject(this);
         }
-    
+
         private void setFlightId()
         {
             string toHash = this.Company + this.DateTime.ToString() + this.Longitude.ToString();
