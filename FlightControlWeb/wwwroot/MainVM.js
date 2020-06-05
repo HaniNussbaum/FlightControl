@@ -1,0 +1,85 @@
+﻿let interval;
+let flights = [];
+
+// get the current UTC time in the required format
+function getDTString(date = new Date()) {
+    let date_time = "";
+    date_time += date.getUTCFullYear() + "-" + (((date.getUTCMonth() + 1) < 10) ? "0" : "") + (date.getUTCMonth() + 1) + "-";
+    date_time += ((date.getUTCDate() < 10) ? "0" : "") + date.getUTCDate() + "T";
+    date_time += ((date.getUTCHours() < 10) ? "0" : "") + date.getUTCHours() + ":" + ((date.getUTCMinutes() < 10) ? "0" : "") + date.getUTCMinutes() + ":";
+    date_time += ((date.getUTCSeconds() < 10) ? "0" : "") + date.getUTCSeconds() + "Z";
+    return date_time;
+}
+
+
+// adds the HTML text of a flight
+function addFlight(flight) {
+    let flightHTML = "";
+    let color = flight.is_external ? 'red' : 'blue';
+    flightHTML += '<li id="' + flight.flight_id + '" class="list-group-item">';
+    flightHTML += '<h6 class="h6"><i class="fa fa-plane" style="color:' + color + '"></i>Flight ID: ' + flight.flight_id + '<br />Company: '
+        + flight.company_name + '</h6>';
+    return flightHTML;
+}
+
+// delete a given flight and refreshes the flights page
+function deleteFlight(flight_id) {
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            getFlights();
+        } // ************** add else if for any other cases *******************
+    };
+    xhttp.open("DELETE", "/api/Flights/" + flight_id, true);
+    xhttp.send();
+}
+
+function displayFlights() {
+    let myFlights = '<ul class="list-group">';
+    let externalFlights = '<ul class="list-group">';
+    // iterating every flight
+    for (flight of flights) {
+        if (flight.is_external) {
+            externalFlights += addFlight(flight);
+            externalFlights += '</li>';
+        } else {
+            myFlights += addFlight(flight);
+            myFlights += '<span onclick="deleteFlight(' + flight.flight_id + ')"><i class="fa fa-trash"></i></span></li>';
+        }
+    }
+    myFlights += '</ul>';
+    externalFlights += '</ul>';
+    // sets the html of my flights
+    document.getElementById("myflights").innerHTML = myFlights;
+    document.getElementById("externalflights").innerHTML = externalFlights;
+
+    // adding click listeners and markers to every flight and if a flight was already marked remarking it
+    let wasMarked = false;
+    for (flight of flights) {
+        let marker = addMarker(flight.flight_id);
+        document.getElementById(flight.flight_id).addEventListener('click', function () {
+            markFlight(marker, this.id);
+        });
+        if (flight.flight_id == markedFlight) {
+            wasMarked = true;
+            markFlight(marker, flight.flight_id);
+        }
+    }
+    // if none of the new flights was marked removing the current mark
+    if (!wasMarked) { removeMark(); }
+}
+
+
+function getFlights() {
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            deleteMarkers();
+            flights = JSON.parse(this.responseText);
+            displayFlights();
+        } // ************** add else if for any other cases *******************
+    };
+    xhttp.open("GET", "/api/Flights?relative_to=" + getDTString() + "&sync_all", true);
+    xhttp.send();
+}

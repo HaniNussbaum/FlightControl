@@ -54,12 +54,12 @@ namespace FlightControlWeb.Models
         public void UpdateLocation(DateTime time)
         {
             int i = 0;
-            DateTime tempTime = DateTime.AddSeconds(Segments[0]["timespan_seconds"]);
+            DateTime tempTime = this.InitialLocation["date_time"];
             foreach (Dictionary<string, dynamic> segment in Segments)
             {
                 if (DateTime.Compare(time, tempTime) > 0)
                 {
-                    tempTime = DateTime.AddSeconds(segment["timespan_seconds"]);
+                    tempTime = tempTime.AddSeconds(segment["timespan_seconds"]);
                     i++;
                 }
                 else
@@ -68,9 +68,17 @@ namespace FlightControlWeb.Models
                 }
             }
             //calculate how much progress the plane has made in it's current segment:
-            double relativeProgress = 1 - ((tempTime - time).TotalSeconds / Segments[i]["timespan_seconds"]);
-            flight.Latitude = (1 - relativeProgress) * Segments[i]["latitude"] + relativeProgress * Segments[i + 1]["latitude"];
-            flight.Longitude = (1 - relativeProgress) * Segments[i]["longitude"] + relativeProgress * Segments[i + 1]["longitude"];
+            double relativeProgress = 1 - ((tempTime - time).TotalSeconds / Segments[i - 1]["timespan_seconds"]);
+            // first route segment
+            if (i == 1)
+            {
+                flight.Latitude = (1 - relativeProgress) * this.InitialLocation["latitude"] + relativeProgress * Segments[i - 1]["latitude"];
+                flight.Longitude = (1 - relativeProgress) * this.InitialLocation["longitude"] + relativeProgress * Segments[i - 1]["longitude"];
+            } else // not first route segments
+            {
+                flight.Latitude = (1 - relativeProgress) * Segments[i - 2]["latitude"] + relativeProgress * Segments[i - 1]["latitude"];
+                flight.Longitude = (1 - relativeProgress) * Segments[i - 2]["longitude"] + relativeProgress * Segments[i - 1]["longitude"];
+            }
         }
 
         private void SetEndTime()
