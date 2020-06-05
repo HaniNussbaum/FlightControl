@@ -12,7 +12,7 @@ namespace FlightControlWeb.Controllers
 
     public class FlightsController : ControllerBase
     {
-        private FlightsModel _model;
+        private IFlightsModel _model;
         private IMemoryCache _cache;
 
         public FlightsController(IMemoryCache cache) {
@@ -20,7 +20,7 @@ namespace FlightControlWeb.Controllers
             _cache = cache;
         }
 
-        public void SetModel(FlightsModel model)
+        public void SetModel(IFlightsModel model)
         {
             _model = model;
         }
@@ -80,7 +80,6 @@ namespace FlightControlWeb.Controllers
             {
                 currFlights = new List<Flight>();
             }
-            //HttpClient client = new HttpClient();
             var servers = new List<Server>();
             if (_cache.TryGetValue("ServerList", out servers))
             {

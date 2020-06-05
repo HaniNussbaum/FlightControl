@@ -13,7 +13,7 @@ namespace FlightControlWeb.Test
     public class UnitTestClass
     {
         private static FlightPlan plan;
-
+        
         [TestCase("latitude range is -90 - +90")]
         [TestCase("longitude range is -180 - +180")]
         [TestCase("number of passengers can not be negative")]
@@ -53,22 +53,31 @@ namespace FlightControlWeb.Test
         }
 
         [Test]
-        [TestCase("2020-12-28T23:43:33Z")]
-        public void FlightsModel_Sync_all(string time)
+        public void FlightsModel_Sync_all()
         {
+            //set up:
+            string time = DateTime.UtcNow.ToString();
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-            Mock<FlightsModel> mockModel = new Mock<FlightsModel>();
+            Mock<IFlightsModel> mockModel = new Mock<IFlightsModel>();
             List<Flight> response = new List<Flight>();
             Server server = new Server();
+            server.ServerId = 123;
+            server.ServerURL = "www.test.com";
+            List<Server> servers = new List<Server>();
+            servers.Add(server);
+            cache.Set("ServerList", servers);
             Flight flight = SetFlight();
             response.Add(flight);
+            List<Flight> curr = new List<Flight>();
+            //mock method definition:
             mockModel.Setup(model => model.GetCurrentFromServer(It.IsAny<Server>(), It.IsAny<string>(), It.IsAny<List<Flight>>()))
-                .Callback<Server, string, List<Flight>>((server, time, response) => Task.FromResult(response))
-                .ReturnsAsync((Server server, string time, List<Flight> response) => response);
+                .Returns((Server server, string time, List<Flight> curr) => { return Task.FromResult(response); });
             FlightsController controller = new FlightsController(cache);
             controller.SetModel(mockModel.Object);
-            Task<List<Flight>> flights = controller.GetAllFlightsByTimeAsync("time");
-            Assert.AreEqual(flights, response);
+            //execution:
+            Task<List<Flight>> flights = controller.GetAllFlightsByTimeAsync(time);
+            //assert:
+            Assert.AreEqual(flights.Result, response);
         }
 
         private Flight SetFlight()

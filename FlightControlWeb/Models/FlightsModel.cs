@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace FlightControlWeb.Models
 {
 
-	public class FlightsModel
+	public class FlightsModel : IFlightsModel
 	{
 		public async Task<List<Flight>> GetCurrentFromServer(Server server, string time, List<Flight> currFlights)
 		{
