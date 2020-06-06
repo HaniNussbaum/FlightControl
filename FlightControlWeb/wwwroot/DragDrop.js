@@ -57,12 +57,12 @@ function uploadFile(file) {
     xhr.open('POST', url);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.addEventListener('readystatechange',
-        function (e) {
-            if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 201 || xhr.status == 202)) {
-                console.log(e.srcElement.response);
+        function () {
+            if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 202)) {
                 getFlights();
-            } else if (xhr.readyState == 4 && (xhr.status != 200 && xhr.status != 201 && xhr.status != 202)) {
-                alert(e.srcElement.response);
+            } else if (this.readyState == 4 && (this.status != 200 && this.status != 201 && this.status != 202)) {
+                showSnackbar("ERROR - Could not upload file, please try again", 3);
+                console.log(this.responseText);
             }
         });
     formData.append('file', file);

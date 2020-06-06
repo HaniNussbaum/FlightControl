@@ -1,6 +1,14 @@
 ﻿let interval;
 let flights = [];
 
+function showSnackbar(messege, sec) {
+    let x = document.getElementById("snackbar");
+    x.className = "show";
+    x.childNodes[0].innerHTML = messege;
+    // After given numbber of seconds, remove the show class from DIV
+    setTimeout(function () { x.className = x.className.replace("show", ""); }, sec*1000);
+}
+
 // get the current UTC time in the required format
 function getDTString(date = new Date()) {
     let date_time = "";
@@ -26,8 +34,7 @@ function addFlight(flight) {
 function deleteFlight(flight_id) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
+        if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 202)) {
             // if deleted flight is currently marked
             if (flight_id == markedFlight) {
                 removeMark();
@@ -35,7 +42,12 @@ function deleteFlight(flight_id) {
                 markedFlight = "";
             }
             getFlights();
-        } // ************** add else if for any other cases *******************
+        } else if (this.readyState == 4 && this.status == 404) {
+            showSnackbar("ERROR - Could not delete flight, please try again", 3);
+        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201 && this.status != 202)) {
+            showSnackbar("Something went wrong, please try again", 3);
+            console.log(this.responseText);
+        }
     };
     xhttp.open("DELETE", "/api/Flights/" + flight_id, true);
     xhttp.send();
@@ -88,11 +100,14 @@ function displayFlights() {
 function getFlights() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 202)) {
             deleteMarkers();
             flights = JSON.parse(this.responseText);
             displayFlights();
-        } // ************** add else if for any other cases *******************
+        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201 && this.status != 202)) {
+            showSnackbar("ERROR - Could not get flights from the server. trying again...", 3);
+            console.log(this.responseText);
+        }
     };
     xhttp.open("GET", "/api/Flights?relative_to=" + getDTString() + "&sync_all", true);
     xhttp.send();

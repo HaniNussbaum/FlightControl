@@ -15,18 +15,16 @@ let pointIcon;
 
 //sets the map on all the markers in the array
 function setMapOnAll(map) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
+    for (marker of markers) {
+        marker.setMap(map);
     }
 }
-
 
 // deletes all currnt markers
 function deleteMarkers() {
     setMapOnAll(null);
     markers = [];
 }
-
 
 //creates a marker
 function addMarker(flight) {
@@ -44,9 +42,8 @@ function addMarker(flight) {
     return marker;
 }
 
-
 // creates the plane route on the map
-function makePath(segments, initial_location) {
+function makePath(segments, initial_location, flight_id) {
     let len = segments.length;
     let flightPlanCoordinates = [];
     let segList = "";
@@ -58,13 +55,13 @@ function makePath(segments, initial_location) {
         segList += '<p class="p" style="font-size:2vh;margin-bottom:0;">';
         segList += '<b>Location:</b> ' + segment.latitude + ' / ' + segment.longitude;
         segList += '<br/>';
-        segList += '<b>Time span:</b>' + segment.timespan_seconds;
+        segList += '<b>Time span: </b>' + segment.timespan_seconds;
     }
     document.getElementById("segments").innerHTML = segList;
     let dest = flightPlanCoordinates[segments.length];
     // setting destination markers position
     destMarker.setPosition(dest);
-    document.getElementById("segments").scrollTo(top);
+    if (flight_id != markedFlight) { document.getElementById("segments").scrollTo(top);}
     flightPath.setPath(flightPlanCoordinates);
 }
 
@@ -87,7 +84,7 @@ function setFlightPlan(flightPlan, flight_id) {
 }
 
 
-// remove the mark from the marked plain
+// remove the mark from the marked plane
 function removeMark() {
     if (isMarked) {
         // dealing with map marker
@@ -126,7 +123,7 @@ function mark(marker, flight_id, flightplan) {
     destMarker = new google.maps.Marker({
         icon: endIcon
     });
-    makePath(flightplan.segments, flightplan.initial_location);
+    makePath(flightplan.segments, flightplan.initial_location, flight_id);
     flightPath.setMap(map);
     destMarker.setMap(map);
 
@@ -140,7 +137,7 @@ function mark(marker, flight_id, flightplan) {
     isMarked = true;
 }
 
-// switches marks from the currnt marked plain to the pressed one
+// switches marks from the currnt marked plane to the pressed one
 function switchMark(marker, flight_id, flightplan) {
     removeMark();
     mark(marker, flight_id, flightplan);
@@ -151,10 +148,15 @@ function switchMark(marker, flight_id, flightplan) {
 function markFlight(marker, flight_id) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 202)) {
             let flightplan = JSON.parse(this.responseText);
             switchMark(marker, flight_id, flightplan);
-        } // ************** add else if for any other cases *******************
+        } else if (this.readyState == 4 && this.status == 404) {
+            showSnackBar("ERROR - Could not get flight plan from the server, trying again...", 3);
+        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201 && this.status != 202)) {
+            showSnackbar("Something went wrong, trying again...", 3);
+            console.log(this.responseText);
+        }
     };
     xhttp.open("GET", "/api/FlightPlan/" + flight_id, true);
     xhttp.send();
@@ -164,7 +166,7 @@ function markFlight(marker, flight_id) {
 function initMap() {
 
     //map settings
-    var options = {
+    let options = {
         zoom: 8,
         center: { lat: 31.4117, lng: 35.0818 }
     };
