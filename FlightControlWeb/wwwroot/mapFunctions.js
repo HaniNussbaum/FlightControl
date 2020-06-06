@@ -48,7 +48,7 @@ function makePath(segments, initial_location, flight_id) {
     let flightPlanCoordinates = [];
     let segList = "";
 
-    flightPlanCoordinates.push({ lat: initial_location.latitude, lng: initial_location.longitude });
+    flightPlanCoordinates.push({ lat: initial_location.latitude, lng: initial_location.longitude});
     for (let segment of segments) {
         flightPlanCoordinates.push({ lat: segment.latitude, lng: segment.longitude });
         segList += '<li class="list-group-item">';
@@ -72,7 +72,9 @@ function setFlightPlan(flightPlan, flight_id) {
         document.getElementById("flight_id").innerHTML = flight_id;
         document.getElementById("passengers").innerHTML = flightPlan.passengers;
         document.getElementById("company_name").innerHTML = flightPlan.company_name;
-        document.getElementById("initial_location").innerHTML = flightPlan.initial_location.longitude + ' / ' + flightPlan.initial_location.latitude;
+        let location = flightPlan.initial_location.longitude + ' / ';
+        location += flightPlan.initial_location.latitude;
+        document.getElementById("initial_location").innerHTML = location;
         document.getElementById("data_time").innerHTML = flightPlan.initial_location.date_time;
     } else {
         document.getElementById("flight_id").innerHTML = "";
@@ -148,12 +150,14 @@ function switchMark(marker, flight_id, flightplan) {
 function markFlight(marker, flight_id) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 202)) {
+        if (this.readyState == 4 && (this.status == 200 || this.status == 201
+            || this.status == 202)) {
             let flightplan = JSON.parse(this.responseText);
             switchMark(marker, flight_id, flightplan);
         } else if (this.readyState == 4 && this.status == 404) {
             showSnackBar("ERROR - Could not get flight plan from the server, trying again...", 3);
-        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201 && this.status != 202)) {
+        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
+            && this.status != 202)) {
             showSnackbar("Something went wrong, trying again...", 3);
             console.log(this.responseText);
         }
@@ -162,22 +166,7 @@ function markFlight(marker, flight_id) {
     xhttp.send();
 }
 
-//instantiatint map
-function initMap() {
-
-    //map settings
-    let options = {
-        zoom: 8,
-        center: { lat: 31.4117, lng: 35.0818 }
-    };
-
-    //create map
-    map = new google.maps.Map(document.getElementById('map'), options);
-    map.addListener('click', function () {
-        removeMark();
-        markedFlight = "";
-    });
-
+function defineIcons() {
     //icons
     planeIcon = {
         url: '/images/planeicon.png', // url
@@ -197,10 +186,23 @@ function initMap() {
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(4, 25)
     };
-    pointIcon = {
-        url: '/images/pointicon.png',
-        scaledSize: new google.maps.Size(20, 20),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(10, 17)
+}
+
+//instantiatint map
+function initMap() {
+
+    //map settings
+    let options = {
+        zoom: 8,
+        center: { lat: 31.4117, lng: 35.0818 }
     };
+
+    //create map
+    map = new google.maps.Map(document.getElementById('map'), options);
+    map.addListener('click', function () {
+        removeMark();
+        markedFlight = "";
+    });
+
+    defineIcons();
 }

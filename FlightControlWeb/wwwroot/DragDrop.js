@@ -19,7 +19,12 @@ function preventDefaults(e) {
 function dragenter() {
     if (!upload) {
         dropAreaText = dropArea.innerHTML;
-        dropArea.innerHTML = '<div class="container" style="pointer-events: none;"> <form class="my-form"><p>Upload files by dragging them onto the dashed area</p><input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)"><label class="button" for="fileElem">Select some files</label>';
+        let text = "";
+        text += '<div class="container" style="pointer-events: none;">';
+        text += '<form class="my-form"><p>Upload files by dragging them onto the dashed area</p>';
+        text += '<input type="file" id="fileElem" multiple accept="image/*"';
+        text += 'onchange = "handleFiles(this.files)" >'
+        dropArea.innerHTML = text;
         dropArea.classList.add('highlight');
         upload = true;
     }
@@ -58,9 +63,11 @@ function uploadFile(file) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.addEventListener('readystatechange',
         function () {
-            if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 202)) {
+            if (this.readyState == 4 && (this.status == 200 || this.status == 201
+                || this.status == 202)) {
                 getFlights();
-            } else if (this.readyState == 4 && (this.status != 200 && this.status != 201 && this.status != 202)) {
+            } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
+                && this.status != 202)) {
                 showSnackbar("ERROR - Could not upload file, please try again", 3);
                 console.log(this.responseText);
             }
