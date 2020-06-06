@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using FlightControlWeb.Models;
 using Newtonsoft.Json;
+using System.Net;
+using System.IO;
+using System.Text;
 
 namespace FlightControlWeb.Controllers
 {
@@ -41,20 +44,34 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public ActionResult<dynamic> AddFlightPlan([FromBody] FlightPlan flightPlan)
         {
-            FlightWrapper newFlight = new FlightWrapper(flightPlan);
+            try
+            {
+                FlightWrapper newFlight = new FlightWrapper(flightPlan);
+                return this.addFlight(newFlight);
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, string> error = new Dictionary<string, string>();
+                error["Status"] = "error";
+                error["Message"] = e.Message;
+                Response.StatusCode = 415;
+                return JsonConvert.SerializeObject(error);
+            }
+        }
+
+        private ActionResult<dynamic> addFlight(FlightWrapper flight)
+        {
             var flights = new Dictionary<string, FlightWrapper>();
             if (!_cache.TryGetValue("flights", out flights))
             {
                 if (flights == null)
                 {
                     flights = new Dictionary<string, FlightWrapper>();
-                    //System.Diagnostics.Debug.WriteLine("serversnull");
                 }
                 _cache.Set("flights", flights);
             }
-            flights.Add(newFlight.Id, newFlight);
-            return Created(newFlight.Id, newFlight);
+            flights.Add(flight.Id, flight);
+            return Created(flight.Id, flight);
         }
-
     }
 }

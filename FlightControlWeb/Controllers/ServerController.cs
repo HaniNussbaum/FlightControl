@@ -47,7 +47,7 @@ namespace FlightControlWeb.Controllers
                     Console.WriteLine("dictionarynull");
                     serversDictionary = new Dictionary<int, Server>();
                 }
-                _cache.Set("ServerList", serversDictionary);
+                _cache.Set("ServerDictionary", serversDictionary);
             }
             if (!_cache.TryGetValue("ServerList", out serversList))
             {
