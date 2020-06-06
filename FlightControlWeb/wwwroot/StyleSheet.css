@@ -5,6 +5,11 @@ h3 {
     padding-left:2vh
 }
 
+.img {
+    height:20vh;
+    width:20vh;
+}
+
 #map {
     height: 70vh;
     width: 100%;
@@ -15,7 +20,7 @@ h3 {
     background-size: cover;
     border: solid;
     border-left: none;
-    height: 97.8vh;
+    height: 99.8vh;
 }
 
 #flightid {

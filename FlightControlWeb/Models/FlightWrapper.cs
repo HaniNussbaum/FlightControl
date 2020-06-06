@@ -140,7 +140,7 @@ namespace FlightControlWeb.Models
             {
                 DateTime dt = DateTime.ParseExact(time, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new Exception("date_time format is incorrect");
             }

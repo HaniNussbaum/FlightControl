@@ -61,7 +61,7 @@ function makePath(segments, initial_location, flight_id) {
     let dest = flightPlanCoordinates[segments.length];
     // setting destination markers position
     destMarker.setPosition(dest);
-    if (flight_id != markedFlight) { document.getElementById("segments").scrollTo(top);}
+    if (flight_id !== markedFlight) { document.getElementById("segments").scrollTo(top);}
     flightPath.setPath(flightPlanCoordinates);
 }
 
@@ -150,14 +150,14 @@ function switchMark(marker, flight_id, flightplan) {
 function markFlight(marker, flight_id) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && (this.status == 200 || this.status == 201
-            || this.status == 202)) {
+        if (this.readyState === 4 && (this.status === 200 || this.status === 201
+            || this.status === 202)) {
             let flightplan = JSON.parse(this.responseText);
             switchMark(marker, flight_id, flightplan);
-        } else if (this.readyState == 4 && this.status == 404) {
+        } else if (this.readyState === 4 && this.status === 404) {
             showSnackBar("ERROR - Could not get flight plan from the server, trying again...", 3);
-        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
-            && this.status != 202)) {
+        } else if (this.readyState === 4 && (this.status !== 200 && this.status !== 201
+            && this.status !== 202)) {
             showSnackbar("Something went wrong, trying again...", 3);
             console.log(this.responseText);
         }

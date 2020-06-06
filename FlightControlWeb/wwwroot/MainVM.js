@@ -37,19 +37,19 @@ function addFlight(flight) {
 function deleteFlight(flight_id) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && (this.status == 200 || this.status == 201
-            || this.status == 202)) {
+        if (this.readyState === 4 && (this.status === 200 || this.status === 201
+            || this.status === 202)) {
             // if deleted flight is currently marked
-            if (flight_id == markedFlight) {
+            if (flight_id === markedFlight) {
                 removeMark();
                 flight_id = "";
                 markedFlight = "";
             }
             getFlights();
-        } else if (this.readyState == 4 && this.status == 404) {
+        } else if (this.readyState === 4 && this.status === 404) {
             showSnackbar("ERROR - Could not delete flight, please try again", 3);
-        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
-            && this.status != 202)) {
+        } else if (this.readyState === 4 && (this.status !== 200 && this.status !== 201
+            && this.status !== 202)) {
             showSnackbar("Something went wrong, please try again", 3);
             console.log(this.responseText);
         }
@@ -74,9 +74,9 @@ function addMarkers() {
     for (flight of flights) {
         let marker = addMarker(flight);
         document.getElementById(flight.flight_id).addEventListener('click', function () {
-            if (markedFlight != this.id) { markFlight(marker, this.id); }
+            if (markedFlight !== this.id) { markFlight(marker, this.id); }
         });
-        if (flight.flight_id == markedFlight) {
+        if (flight.flight_id === markedFlight) {
             wasMarked = true;
             markFlight(marker, flight.flight_id);
         }
@@ -116,13 +116,13 @@ function displayFlights() {
 function getFlights() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && (this.status == 200 || this.status == 201
-            || this.status == 202)) {
+        if (this.readyState === 4 && (this.status === 200 || this.status === 201
+            || this.status === 202)) {
             deleteMarkers();
             flights = JSON.parse(this.responseText);
             displayFlights();
-        } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
-            && this.status != 202)) {
+        } else if (this.readyState === 4 && (this.status !== 200 && this.status !== 201
+            && this.status !== 202)) {
             showSnackbar("ERROR - Could not get flights from the server. trying again...", 3);
             console.log(this.responseText);
         }

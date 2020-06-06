@@ -22,8 +22,8 @@ function dragenter() {
         let text = "";
         text += '<div class="container" style="pointer-events: none;">';
         text += '<form class="my-form">';
-        text += '<p><b>Upload files by dragging them onto the dashed area</b>';
-        text += '<br /><span class="fas fa-cloud-upload-alt"></span></p>';
+        text += '<p><b>Upload files by dragging them onto the dashed area</b></p>';
+        text += "<img class='img' src='Images/Upload-Transparent-Images.png' alt='Upload files'>";
         text += '<input type="file" id="fileElem" multiple accept="image/*"';
         text += 'onchange = "handleFiles(this.files)" >'
         dropArea.innerHTML = text;
@@ -65,11 +65,11 @@ function uploadFile(file) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.addEventListener('readystatechange',
         function () {
-            if (this.readyState == 4 && (this.status == 200 || this.status == 201
-                || this.status == 202)) {
+            if (this.readyState === 4 && (this.status === 200 || this.status === 201
+                || this.status === 202)) {
                 getFlights();
-            } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
-                && this.status != 202)) {
+            } else if (this.readyState === 4 && (this.status !== 200 && this.status !== 201
+                && this.status !== 202)) {
                 showSnackbar("ERROR - Could not upload file, please try again", 3);
                 console.log(this.responseText);
             }
