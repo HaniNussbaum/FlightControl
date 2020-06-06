@@ -6,13 +6,8 @@
     <title>Flight Control Web</title>
     <link rel="shortcut icon" href="https://img.icons8.com/dusk/64/000000/airport.png" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <style>
-        #map {
-            height: 70vh;
-            width: 100%;
-        }
-    </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href='StyleSheet.css' />
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -27,18 +22,18 @@
     <script src="DragDrop.js" defer></script>
 
 </head>
-<body style="overflow-y:scroll">
+<body>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-8" style="border: none;">
-                <div class="row" style="border:solid; border-color:aqua;">
+                <div class="row" style="border: solid; border-color: black;">
                     <div id="map"></div>
                     <script initMap(); async defer type="text/javascript" 
                             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDu0dB9KR-9_HCsmGajuuwOnh7jXAQ4AWo&callback=initMap">
 
                     </script>
                 </div>
-                <div class="row" style="border:solid; border-color:aqua; border-top:none;">
+                <div id="flightid" class="row" style="border: solid; border-color: black; border-top: none;">
                     <div class="col-sm-6">
                         <div class="container-fluid">
                             <h5 class="h5" style="margin-bottom:0; font-size:5vh">Flight ID: <span id="flight_id"></span></h5>
@@ -62,13 +57,13 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4" style="border:none;">
-                <div id="content" style="overflow-y: scroll; height: 98vh">
+            <div class="col-sm-4" style="border: none; padding: 0;">
+                <div id="content">
                     <h3 class="h3">My Flights</h3>
-                    <div id="myflights" style="overflow-y: scroll; height: 40vh"></div>
+                    <div id="myflights"></div>
                     <hr />
                     <h3 class="h3">External Flights</h3>
-                    <div id="externalflights" style="overflow-y: scroll; height: 40vh;"></div>
+                    <div id="externalflights"></div>
                 </div>
             </div>
         </div>

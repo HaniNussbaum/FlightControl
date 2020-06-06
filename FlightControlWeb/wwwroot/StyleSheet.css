@@ -1,0 +1,56 @@
+﻿body {
+    overflow-y: scroll;
+}
+h3 {
+    padding-left:2vh
+}
+
+#map {
+    height: 70vh;
+    width: 100%;
+}
+
+#content {
+    background-image: url('Images/clouds.gif');
+    background-size: cover;
+    border: solid;
+    border-left: none;
+    height: 97.8vh;
+}
+
+#flightid {
+    background-image: url('Images/planeg.gif');
+    background-size: cover;
+    background-attachment: fixed;
+    object-fit: contain;
+}
+
+#myflights, #externalflights {
+    overflow-y: scroll;
+    height: 38vh;
+}
+
+/*drag and drop styling*/
+
+    #myflights.highlight {
+        border: 2px dashed;
+        font-family: sans-serif;
+        border-color: purple;
+        vertical-align: middle;
+        padding: 5vh;
+        margin: 3vh;
+        overflow-y:hidden;
+        text-align: center;
+       
+    }
+
+.my-form {
+    margin-bottom: 10px;
+}
+
+
+#fileElem {
+    display: none;
+}
+
+

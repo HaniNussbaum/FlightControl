@@ -19,7 +19,7 @@ function preventDefaults(e) {
 function dragenter() {
     if (!upload) {
         dropAreaText = dropArea.innerHTML;
-        dropArea.innerHTML = '<div class="container" style="pointer-events: none;"> <form class="my-form"><p>Upload files by dragging them onto the dashed area</p><input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)"><label class="button" for="fileElem">Select some files</label>';
+        dropArea.innerHTML = '<div class="container" style="pointer-events: none;"> <form class="my-form"><p><b>Upload files by dragging them onto the dashed area</b><br /><span class="fa fa-cloud-upload-alt"></span></p><input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">';
         dropArea.classList.add('highlight');
         upload = true;
     }
