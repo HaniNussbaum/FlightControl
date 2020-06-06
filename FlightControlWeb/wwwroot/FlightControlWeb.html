@@ -28,7 +28,7 @@
             <div class="col-sm-8" style="border: none;">
                 <div class="row" style="border: solid; border-color: black;">
                     <div id="map"></div>
-                    <script initMap(); async defer type="text/javascript" 
+                    <script initMap(); async defer type="text/javascript"
                             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDu0dB9KR-9_HCsmGajuuwOnh7jXAQ4AWo&callback=initMap">
 
                     </script>
@@ -48,8 +48,8 @@
                             </p>
                         </div>
                     </div>
-                        
-                    <div class="col-sm-6" >
+
+                    <div class="col-sm-6">
                         <div class="container-fluid">
                             <h6 class="h6" style="font-size:3vh">Route segments:</h6>
                             <ul class="list-group" id="segments" style="height:20vh; overflow-y:scroll"></ul>
@@ -60,7 +60,7 @@
             <div class="col-sm-4" style="border: none; padding: 0;">
                 <div id="content">
                     <h3 class="h3">My Flights</h3>
-                    <div id="myflights"></div>
+                    <div id="myflights" style="overflow-y: scroll; height: 40vh"></div>
                     <hr />
                     <h3 class="h3">External Flights</h3>
                     <div id="externalflights"></div>
@@ -68,6 +68,8 @@
             </div>
         </div>
     </div>
-    <script defer>interval = setInterval(function () {if (!upload) getFlights(); }, 3000);</script>
+    <!-- snackbar -->
+    <div id="snackbar"><b></b></div>
+    <script defer>interval = setInterval(function (){ if (!upload) getFlights(); }, 3000);</script>
 </body>
 </html>

@@ -19,7 +19,14 @@ function preventDefaults(e) {
 function dragenter() {
     if (!upload) {
         dropAreaText = dropArea.innerHTML;
-        dropArea.innerHTML = '<div class="container" style="pointer-events: none;"> <form class="my-form"><p><b>Upload files by dragging them onto the dashed area</b><br /><span class="fa fa-cloud-upload-alt"></span></p><input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">';
+        let text = "";
+        text += '<div class="container" style="pointer-events: none;">';
+        text += '<form class="my-form">';
+        text += '<p><b>Upload files by dragging them onto the dashed area</b>';
+        text += '<br /><span class="fas fa-cloud-upload-alt"></span></p>';
+        text += '<input type="file" id="fileElem" multiple accept="image/*"';
+        text += 'onchange = "handleFiles(this.files)" >'
+        dropArea.innerHTML = text;
         dropArea.classList.add('highlight');
         upload = true;
     }
@@ -57,12 +64,14 @@ function uploadFile(file) {
     xhr.open('POST', url);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.addEventListener('readystatechange',
-        function (e) {
-            if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 201 || xhr.status == 202)) {
-                console.log(e.srcElement.response);
+        function () {
+            if (this.readyState == 4 && (this.status == 200 || this.status == 201
+                || this.status == 202)) {
                 getFlights();
-            } else if (xhr.readyState == 4 && (xhr.status != 200 && xhr.status != 201 && xhr.status != 202)) {
-                alert(e.srcElement.response);
+            } else if (this.readyState == 4 && (this.status != 200 && this.status != 201
+                && this.status != 202)) {
+                showSnackbar("ERROR - Could not upload file, please try again", 3);
+                console.log(this.responseText);
             }
         });
     formData.append('file', file);
