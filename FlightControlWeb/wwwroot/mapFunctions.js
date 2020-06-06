@@ -194,7 +194,7 @@ function initMap() {
     //map settings
     let options = {
         zoom: 8,
-        center: { lat: 31.4117, lng: 35.0818 }
+        center: { lat: 31.4117, lng: 35.0818 },
         styles: [
             {
                 elementType: 'geometry',
