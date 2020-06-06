@@ -1,0 +1,127 @@
+﻿body {
+    overflow-y: scroll;
+}
+h3 {
+    padding-left:2vh
+}
+
+#map {
+    height: 70vh;
+    width: 100%;
+}
+
+#content {
+    background-image: url('Images/clouds.gif');
+    background-size: cover;
+    border: solid;
+    border-left: none;
+    height: 97.8vh;
+}
+
+#flightid {
+    background-image: url('Images/planeg.gif');
+    background-size: cover;
+    background-attachment: fixed;
+    object-fit: contain;
+}
+
+#myflights, #externalflights {
+    overflow-y: scroll;
+    height: 38vh;
+}
+
+/*drag and drop styling*/
+
+    #myflights.highlight {
+        border: 2px dashed;
+        font-family: sans-serif;
+        border-color: purple;
+        vertical-align: middle;
+        padding: 5vh;
+        margin: 3vh;
+        overflow-y:hidden;
+        text-align: center;
+       
+    }
+
+.my-form {
+    margin-bottom: 10px;
+}
+
+
+#fileElem {
+    display: none;
+}
+
+/* Rounded border */
+hr.rounded {
+    border-top: 6px solid #bbb;
+    border-radius: 4px;
+}
+/*Snackbar*/
+#snackbar {
+    visibility: hidden; /* Hidden by default. Visible on error */
+    min-width: 250px; /* Set a default minimum width */
+    margin-left: -125px; /* Divide value of min-width by 2 */
+    background-color: #ff0000; /* Black background color */
+    color: #ffffff; /* White text color */
+    text-align: center; /* Centered text */
+    border-radius: 2px; /* Rounded borders */
+    padding: 16px; /* Padding */
+    position: fixed; /* Sit on top of the screen */
+    z-index: 1; /* bring to front */
+    left: 50%; /* Center the snackbar */
+    top: 30px; /* 30px from the top */
+}
+    /*Snacknar not hidden*/
+    #snackbar.show {
+        visibility: visible; /* Show the snackbar */
+        /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+        However, delay the fade out process for 2.5 seconds */
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+    from {
+        top: 0;
+        opacity: 0;
+    }
+    to {
+        top: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadein {
+    from {
+        top: 0;
+        opacity: 0;
+    }
+    to {
+        top: 30px;
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeout {
+    from {
+        top: 30px;
+        opacity: 1;
+    }
+    to {
+        top: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        top: 30px;
+        opacity: 1;
+    }
+    to {
+        top: 0;
+        opacity: 0;
+    }
+}

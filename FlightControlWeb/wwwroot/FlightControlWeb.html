@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flight Control Web</title>
+    <link rel="shortcut icon" href="https://img.icons8.com/dusk/64/000000/airport.png" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href='StyleSheet.css' />
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <script src='mapFunctions.js'></script>
+    <script src='MainVM.js' defer></script>
+    <script src="DragDrop.js" defer></script>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8" style="border: none;">
+                <div class="row" style="border: solid; border-color: black;">
+                    <div id="map"></div>
+                    <script initMap(); async defer type="text/javascript"
+                            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDu0dB9KR-9_HCsmGajuuwOnh7jXAQ4AWo&callback=initMap">
+
+                    </script>
+                </div>
+                <div id="flightid" class="row" style="border: solid; border-color: black; border-top: none;">
+                    <div class="col-sm-6">
+                        <div class="container-fluid">
+                            <h5 class="h5" style="margin-bottom:0; font-size:5vh">Flight ID: <span id="flight_id"></span></h5>
+                            <p class="p" style="font-size:3vh;">
+                                <b>Passengers:</b> <span id="passengers"></span>
+                                <br />
+                                <b>Company name:</b> <span id="company_name"></span>
+                                <br />
+                                <b>Initial location:</b> <span id="initial_location"></span>
+                                <br />
+                                <b>Dispatch date & time:</b><br /><span id="data_time"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="container-fluid">
+                            <h6 class="h6" style="font-size:3vh">Route segments:</h6>
+                            <ul class="list-group" id="segments" style="height:20vh; overflow-y:scroll"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4" style="border: none; padding: 0;">
+                <div id="content">
+                    <h3 class="h3">My Flights</h3>
+                    <div id="myflights"></div>
+                    <hr />
+                    <h3 class="h3">External Flights</h3>
+                    <div id="externalflights"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- snackbar -->
+    <div id="snackbar"><b></b></div>
+    <script defer>interval = setInterval(function (){ if (!upload) getFlights(); }, 3000);</script>
+</body>
+</html>
